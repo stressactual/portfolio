@@ -1,0 +1,320 @@
+@font-face {
+  font-family: "EB Garamond";
+  src: url("fonts/EBGaramond.ttf") format("truetype");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "EB Garamond";
+  src: url("fonts/EBGaramond-Italic.ttf") format("truetype");
+  font-weight: 400 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --bg: #E6E6E6;
+  --line: rgb(215, 215, 215);
+  --tile: 12px;
+  --shape: #9FFF66;   /* color of the background symbol; text inverts against it */
+  --text: #333;
+  --muted: #757575;
+  --link: #BE8CFF;
+  --rule: #8F8F8F;
+}
+
+* { box-sizing: border-box; }
+
+/* fine line grid background: static 1px hairlines every --tile px, drawn on <html>. */
+html {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--line) 0 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 0 1px, transparent 1px);
+  background-size: var(--tile) var(--tile);
+}
+
+/* background symbol: a fixed disc above the page with mix-blend-mode: difference, so it never covers
+   anything. It inverts whatever is under it: the grid turns dark and any text crossing it flips to
+   light, changing back as you scroll it out. pointer-events: none keeps links clickable.
+   z-index 5 keeps it under the contact bubble (z-index 10). To try a thin ring instead of a disc,
+   replace the background line with:  border: 2px solid var(--shape);  */
+html::after {
+  content: "";
+  position: fixed;
+  --d: clamp(12rem, 34vmin, 26rem);   /* diameter */
+  top: 16vh;
+  /* Sits over the right side of the text column (which is centered, 46rem wide) on wide screens,
+     and stays 8vw from the right edge on small ones, whichever is further left. */
+  left: min(calc(92vw - var(--d)), calc(50vw + 4rem));
+  width: var(--d);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--shape);
+  mix-blend-mode: exclusion;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@media print { html::after { display: none; } }
+
+body {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  color: var(--text);
+  font: 1.25rem/1.6 "EB Garamond", Garamond, "Times New Roman", Times, serif;
+}
+
+/* header + nav (same on every page) */
+header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.name a { color: inherit; text-decoration: none; }
+
+.tagline {
+  margin: 0.25rem 0 1.25rem;
+  font-size: 1rem;
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav a {
+  color: inherit;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+}
+
+nav a:hover,
+nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* content */
+main a { color: var(--link); }
+main a:hover { color: var(--text); }
+a:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+
+h1 { font-size: 1.25rem; margin: 0 0 1rem; }
+
+h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+}
+
+p { max-width: 38rem; margin: 0 0 1rem; }
+
+.muted { color: var(--muted); }
+
+/* credits list (work page) */
+.credits { margin: 0; padding: 0; list-style: none; }
+
+.credits li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 1.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.credits .role { color: var(--muted); }
+
+/* cover grid (discography page) */
+.covers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.covers a { color: inherit; text-decoration: none; }
+
+.covers img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.covers .title { display: block; margin-top: 0.4rem; font-size: 0.95rem; line-height: 1.35; }
+.covers .year { display: block; font-size: 0.9rem; color: var(--muted); }
+.covers a:hover .title { text-decoration: underline; }
+
+footer { margin-top: 4rem; font-size: 0.9rem; color: var(--muted); }
+
+/* contact bubble */
+nav button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+nav button:hover,
+nav button[aria-expanded="true"] {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+nav button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+
+.contact-pop {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 10;
+  width: max-content;
+  max-width: calc(100vw - 2.5rem);
+  margin: 0;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--text);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  font-size: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.contact-pop .email { margin: 0 0 0.6rem; user-select: all; }
+.contact-pop .actions { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+
+.contact-pop a,
+.contact-pop button {
+  letter-spacing: normal;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.contact-pop a:hover,
+.contact-pop button:hover { color: var(--text); }
+.contact-pop a:focus-visible,
+.contact-pop button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+
+/* cv page */
+.cv { margin: 0; padding: 0; list-style: none; }
+
+.cv li {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 0 1rem;
+  padding: 0.2rem 0;
+}
+
+.cv .yr { color: var(--muted); }
+
+nav li.contact { position: relative; }
+
+/* open state: fade in, then float */
+.contact-pop.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.3s ease, visibility 0s;
+  animation: float 7s ease-in-out infinite;
+}
+
+/* Moves the box with margins (whole pixels) instead of transform, so the
+   text is never resampled at fractional positions and stays sharp. */
+@keyframes float {
+  0%, 100% { margin: 0 0 0 0; }
+  25%      { margin: -2px 0 0 3px; }
+  50%      { margin: -4px 0 0 0; }
+  75%      { margin: -2px 0 0 -3px; }
+}
+
+/* hold still while someone is using it */
+.contact-pop.is-open:hover,
+.contact-pop.is-open:focus-within {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-pop.is-open { animation: none; }
+}
+
+/* sound design page */
+.reel { margin: 2rem 0 0; padding: 0; list-style: none; }
+.reel li { margin: 0 0 2.5rem; }
+
+.reel video,
+.reel iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: #000;
+}
+
+/* sit above the background disc (z-index 5) so it passes behind the videos instead of inverting them */
+.reel video,
+.reel iframe { position: relative; z-index: 6; }
+
+.reel h2 { margin: 0.75rem 0 0.15rem; }
+.reel p { margin: 0; }
+
+/* page fade: new pages fade in, and links fade the page out before leaving.
+   The header stays put; only the content and footer fade. (script.js adds html.leaving) */
+@keyframes page-in { from { opacity: 0; } }
+
+main,
+footer { animation: page-in 0.3s ease backwards; }
+
+html.leaving main,
+html.leaving footer {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main,
+  footer { animation: none; }
+}
+
+/* discography: 3 across, 2 across on small phones */
+@media (max-width: 28rem) {
+  .covers { grid-template-columns: repeat(2, 1fr); }
+}
+
+main, footer, .tagline {
+  text-shadow: 0 0 3px var(--bg), 0 0 3px var(--bg);
+}
